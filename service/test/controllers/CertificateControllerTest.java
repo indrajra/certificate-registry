@@ -32,8 +32,8 @@ public class CertificateControllerTest extends BaseApplicationTest {
         setup(DummyActor.class);
     }
 
-   @Test
-    public void testAddCertificateSuccess() {
+    @Test
+    public void testAddCertificateV1Success() {
         Result result =
                 performTest(
                         "/certs/v1/registry/add",
@@ -43,10 +43,30 @@ public class CertificateControllerTest extends BaseApplicationTest {
     }
 
     @Test
-    public void testAddCertificateFailure() {
+    public void testAddCertificateV1Failure() {
         Result result =
                 performTest(
                         "/certs/v1/registry/add",
+                        "POST",
+                        createCertRequest(true));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, getResponseStatus(result));
+    }
+
+   @Test
+    public void testAddCertificateSuccess() {
+        Result result =
+                performTest(
+                        "/certs/v2/registry/add",
+                        "POST",
+                        createCertRequest(false));
+        assertEquals(HttpStatus.SC_OK, getResponseStatus(result));
+    }
+
+    @Test
+    public void testAddCertificateFailure() {
+        Result result =
+                performTest(
+                        "/certs/v2/registry/add",
                         "POST",
                         createCertRequest(true));
         assertEquals(HttpStatus.SC_BAD_REQUEST, getResponseStatus(result));
@@ -118,6 +138,27 @@ public class CertificateControllerTest extends BaseApplicationTest {
         Result result =
                 performTest(
                         "/certs/v1/registry/read/123",
+                        "GET",
+                        null);
+        assertEquals(HttpStatus.SC_OK, getResponseStatus(result));
+    }
+
+    @Test
+    public void testReadCertificateMetaDataSuccess() {
+        Result result =
+                performTest(
+                        "/certs/v1/registry/read/metadata/123",
+                        "GET",
+                        null);
+        assertEquals(HttpStatus.SC_OK, getResponseStatus(result));
+    }
+
+
+    @Test
+    public void testDownloadV2CertificateSuccess() {
+        Result result =
+                performTest(
+                        "/certs/v2/registry/download/123",
                         "GET",
                         null);
         assertEquals(HttpStatus.SC_OK, getResponseStatus(result));

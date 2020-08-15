@@ -5,6 +5,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
+import com.google.common.collect.Lists;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import org.apache.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.ActorOperations;
+import org.sunbird.BaseException;
 import org.sunbird.CertVars;
 import org.sunbird.JsonKeys;
 import org.sunbird.cassandra.CassandraOperation;
@@ -35,6 +37,8 @@ import org.sunbird.service.ICertService;
 import org.sunbird.serviceimpl.CertsServiceImpl;
 import org.sunbird.utilities.CertificateUtil;
 import scala.concurrent.duration.Duration;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -68,8 +72,6 @@ public class CertificationActorTest {
 
     JSONObject object2 = null;
     public void beforeTestSetUp() throws Exception {
-        PowerMockito.mockStatic(Localizer.class);
-        when(Localizer.getInstance()).thenReturn(null);
         PowerMockito.mockStatic(CertVars.class);
         PowerMockito.mockStatic(EsClientFactory.class);
         ElasticSearchRestHighImpl elasticSearchRestHigh = PowerMockito.mock(ElasticSearchRestHighImpl.class);
@@ -118,6 +120,7 @@ public class CertificationActorTest {
         when(CertVars.getVerifyUri()).thenReturn("verify_uri");
         when(certsService.verify(Mockito.any(Request.class))).thenReturn(getValidateCertResponse());
         when(CertificateUtil.getCertificate(Mockito.anyString())).thenReturn(map);
+        when(CertificateUtil.getCertRecordByID(Mockito.anyString())).thenReturn(getCertReadResponse());
     }
 
     public static void tearDown() throws Exception {
@@ -201,6 +204,70 @@ public class CertificationActorTest {
         Assert.assertTrue(null != res && res.getResponseCode() == ResponseCode.OK);
     }
 
+    @Test
+    public void testReadCertificateMetaData() throws Exception {
+        Request request = createCertReadRequest();
+        request.setOperation(ActorOperations.READ_CERT_META_DATA.getOperation());
+        beforeTestSetUp();
+        TestKit testKit = new TestKit(system);
+        ActorRef actorRef = system.actorOf(props);
+        actorRef.tell(request, testKit.getRef());
+        Response res = testKit.expectMsgClass(Duration.create(1000, TimeUnit.SECONDS),Response.class);
+        Assert.assertTrue(null != res && res.getResponseCode() == ResponseCode.OK);
+    }
+
+
+    @Test
+    public void testDownloadV2Certificate() throws Exception {
+        Request request = createDownloadV2CertRequest();
+        request.setOperation(ActorOperations.DOWNLOADV2.getOperation());
+        beforeTestSetUp();
+        TestKit testKit = new TestKit(system);
+        ActorRef actorRef = system.actorOf(props);
+        actorRef.tell(request, testKit.getRef());
+        Response res = testKit.expectMsgClass(Duration.create(1000, TimeUnit.SECONDS),Response.class);
+        Assert.assertTrue(null != res && res.getResponseCode() == ResponseCode.OK);
+    }
+
+    @Test
+    public void testDownloadV2CertificateFailure() throws Exception {
+        Request request = createDownloadV2CertRequest();
+        request.setOperation(ActorOperations.DOWNLOADV2.getOperation());
+        beforeTestSetUp();
+        Response readRes = new Response();
+        readRes.getResult().put(JsonKeys.RESPONSE, new ArrayList<>());
+        when(CertificateUtil.getCertRecordByID(Mockito.anyString())).thenReturn(readRes);
+        TestKit testKit = new TestKit(system);
+        ActorRef actorRef = system.actorOf(props);
+        actorRef.tell(request, testKit.getRef());
+        BaseException res = testKit.expectMsgClass(Duration.create(1000, TimeUnit.SECONDS),BaseException.class);
+        Assert.assertTrue(null != res);
+    }
+
+    private Response getCertReadResponse() {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put(JsonKeys.DATA, "{\"id\":\"http://localhost:8080/_schemas/Certificate/d5a28280-98ac-4294-a508-21075dc7d475\",\"type\":[\"Assertion\",\"Extension\",\"extensions:CertificateExtension\"],\"issuedOn\":\"2019-08-31T12:52:25Z\",\"recipient\":{\"identity\":\"ntptest103\",\"type\":[\"phone\"],\"hashed\":false,\"name\":\"Aishwarya\",\"@context\":\"http://localhost:8080/_schemas/context.json\"},\"badge\":{\"id\":\"http://localhost:8080/_schemas/Badge.json\",\"type\":[\"BadgeClass\"],\"name\":\"Sunbird installation\",\"description\":\"Certificate of Appreciation in National Level ITI Grading\",\"image\":\"https://certs.example.gov/o/dgt/HJ5327VB1247G\",\"criteria\":{\"type\":[\"Criteria\"],\"id\":\"http://localhost:8080/_schemas/Certificate/d5a28280-98ac-4294-a508-21075dc7d475\",\"narrative\":\"For exhibiting outstanding performance\"},\"issuer\":{\"context\":\"http://localhost:8080/_schemas/context.json\",\"id\":\"http://localhost:8080/_schemas/Issuer.json\",\"type\":[\"Issuer\"],\"name\":\"NIIT\"},\"@context\":\"http://localhost:8080/_schemas/context.json\"},\"expires\":\"2019-09-30T12:52:25Z\",\"verification\":{\"type\":[\"SignedBadge\"],\"creator\":\"http://localhost:8080/_schemas/publicKey.json\"},\"revoked\":false,\"validFrom\":\"2019-06-21\",\"@context\":\"http://localhost:8080/_schemas/context.json\"}");
+        responseMap.put(JsonKeys.RELATED, "{\"type\":\"course completion certificate prad\",\"batchId\":\"0130589602973368326\",\"courseId\":\"do_11305895730108006411643\"}");
+        Response response = new Response();
+        response.put(JsonKeys.RESPONSE, Lists.newArrayList(responseMap));
+        return response;
+    }
+
+    @Test
+    public void testReadCertificateMetaDataInvalidCertId() throws Exception {
+        Request request = createCertReadRequest();
+        request.setOperation(ActorOperations.READ_CERT_META_DATA.getOperation());
+        beforeTestSetUp();
+        Response readRes = new Response();
+        readRes.getResult().put(JsonKeys.RESPONSE, new ArrayList<>());
+        when(CertificateUtil.getCertRecordByID(Mockito.anyString())).thenReturn(readRes);
+        TestKit testKit = new TestKit(system);
+        ActorRef actorRef = system.actorOf(props);
+        actorRef.tell(request, testKit.getRef());
+        BaseException res = testKit.expectMsgClass(Duration.create(1000, TimeUnit.SECONDS),BaseException.class);
+        Assert.assertTrue(null != res);
+    }
+
     private Request createVerifyCertRequest() {
         Request request = new Request();
         request.getRequest().put(JsonKeys.ID,"some_id");
@@ -212,7 +279,6 @@ public class CertificationActorTest {
     private Response getValidateCertResponse(){
         Map<String,Object>responseMap=new HashMap<>();
         responseMap.put(JsonKeys.JSON,new HashMap<>());
-        responseMap.put(JsonKeys.PDF,"pdf url");
         responseMap.put(JsonKeys.RELATED,new HashMap<>());
         Response response=new Response();
         response.put(JsonKeys.RESPONSE,responseMap);
@@ -222,6 +288,14 @@ public class CertificationActorTest {
         Request reqObj = new Request();
         Map<String,Object> reqMap = new HashMap<>();
         reqMap.put(JsonKeys.PDF_URL,"pdf_url");
+        reqObj.getRequest().putAll(reqMap);
+        return reqObj;
+    }
+
+    private Request createDownloadV2CertRequest() {
+        Request reqObj = new Request();
+        Map<String,Object> reqMap = new HashMap<>();
+        reqMap.put(JsonKeys.ID,"anyMockId");
         reqObj.getRequest().putAll(reqMap);
         return reqObj;
     }
@@ -271,7 +345,10 @@ public class CertificationActorTest {
         related.put("completionUrl", "completionUrl");
         innerMap.put("related", related);
         innerMap.put("jsonData", jsonData);
+        Map<String, Object> context = new HashMap<>();
+        context.put(JsonKeys.VERSION, JsonKeys.VERSION_1);
         reqMap.put("request",innerMap);
+        reqObj.setContext(context);
         reqObj.getRequest().putAll(reqMap);
         return reqObj;
     }
