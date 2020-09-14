@@ -1,8 +1,6 @@
 package org.sunbird.serviceimpl;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -10,7 +8,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.CertVars;
 import org.sunbird.JsonKeys;
@@ -22,10 +21,8 @@ import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import org.sunbird.service.ICertService;
-import org.sunbird.utilities.CertificateMetaData;
 import org.sunbird.utilities.CertificateUtil;
 import org.sunbird.utilities.ESResponseMapper;
-import org.sunbird.utilities.TemplateVarResolver;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -41,7 +38,7 @@ import java.util.concurrent.Future;
  * @author anmolgupta
  */
 public class CertsServiceImpl implements ICertService {
-    private static Logger logger = Logger.getLogger(CertsServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(CertsServiceImpl.class);
     private static Localizer localizer = Localizer.getInstance();
     private static ObjectMapper requestMapper = new ObjectMapper();
     static Map<String, String> headerMap = new HashMap<>();
@@ -157,13 +154,19 @@ public class CertsServiceImpl implements ICertService {
         Map<String,Object> valCertReq = request.getRequest();
         String certificatedId = (String) valCertReq.get(JsonKeys.CERT_ID);
         String accessCode = (String) valCertReq.get(JsonKeys.ACCESS_CODE);
-        Map<String,Object>esCertData=CertificateUtil.getCertificate(certificatedId);
-        if (MapUtils.isNotEmpty(esCertData) && StringUtils.equalsIgnoreCase((String)esCertData.get(JsonKeys.ACCESS_CODE),accessCode)) {
-            Certificate certificate=getCertObject(esCertData);
+        Response certResponse = CertificateUtil.getCertRecordByID(certificatedId);
+        List<Map<String, Object>> resultList = (List<Map<String, Object>>) certResponse.getResult().get(JsonKeys.RESPONSE);
+        if (CollectionUtils.isNotEmpty(resultList) && MapUtils.isNotEmpty(resultList.get(0)) &&
+                StringUtils.equalsIgnoreCase((String) resultList.get(0).get(JsonKeys.ACCESS_CODE), accessCode)) {
+            Map<String, Object> result = resultList.get(0);
             Map<String,Object>responseMap=new HashMap<>();
-            responseMap.put(JsonKeys.JSON,certificate.getData());
-            responseMap.put(JsonKeys.PDF_URL,certificate.getPdfUrl());
-            responseMap.put(JsonKeys.RELATED,certificate.getRelated());
+            try {
+                responseMap.put(JsonKeys.RELATED, requestMapper.readValue((String) result.get(JsonKeys.RELATED), new TypeReference<Map<String, Object>>(){}));
+                responseMap.put(JsonKeys.JSON, requestMapper.readValue((String) result.get(JsonKeys.DATA), new TypeReference<Map<String, Object>>(){}));
+            } catch (Exception e) {
+                logger.error("CertsServiceImpl:validate:exception occurred:" + e);
+                throw new BaseException(IResponseMessage.INTERNAL_ERROR, getLocalizedMessage(IResponseMessage.INTERNAL_ERROR, null), ResponseCode.SERVER_ERROR.getCode());
+            }
             Response response=new Response();
             response.put(JsonKeys.RESPONSE,responseMap);
             return response;
@@ -292,30 +295,26 @@ public class CertsServiceImpl implements ICertService {
     @Override
     public Response read(Request request) throws BaseException {
         String id=(String)request.getRequest().get(JsonKeys.ID);
-        logger.info("CertServiceImpl:read:idProvided:"+id);
-        Map<String,Object>esCertData=CertificateUtil.getCertificate(id);
-        logger.info("CertServiceImpl:read:esCert data is :"+esCertData);
-        if(MapUtils.isEmpty(esCertData)){
-            throw new BaseException(IResponseMessage.RESOURCE_NOT_FOUND,localizer.getMessage(IResponseMessage.RESOURCE_NOT_FOUND,null), ResponseCode.RESOURCE_NOT_FOUND.getCode());
-        }
-        Certificate certificate=getCertObject(esCertData);
-        Response response=new Response();
-        response.put(JsonKeys.RESPONSE,certificate);
-        return response;
-    }
-
-    @Override
-    public Response readCertMetaData(Request request) throws BaseException {
-        String certId = (String) request.getRequest().get(JsonKeys.ID);
-        logger.info("CertServiceImpl:read:idProvided:" + certId);
-        Response certData = CertificateUtil.getCertRecordByID(certId);
+        logger.info("CertServiceImpl:read:idProvided: {}",id);
+        Response cassandraResponse = CertificateUtil.getCertRecordByID(id);
         Response response = new Response();
-        List<Map<String, Object>> resultList = (List<Map<String, Object>>) certData.getResult().get(JsonKeys.RESPONSE);
+        List<Map<String, Object>> resultList = (List<Map<String, Object>>) cassandraResponse.getResult().get(JsonKeys.RESPONSE);
         if (CollectionUtils.isNotEmpty(resultList) && MapUtils.isNotEmpty(resultList.get(0))) {
             Map<String, Object> certInfo = resultList.get(0);
-            TemplateVarResolver templateVarResolver = new TemplateVarResolver();
-            CertificateMetaData certificateMetaData = templateVarResolver.generateCertMetaData(certInfo);
-            response.put(JsonKeys.RESPONSE, requestMapper.convertValue(certificateMetaData, Map.class));
+            try {
+                Map<String, Object> data = requestMapper.readValue((String) certInfo.get(JsonKeys.DATA), new TypeReference<Map<String, Object>>() {});
+                Map<String, Object> recipient = requestMapper.readValue((String) certInfo.get(JsonKeys.RECIPIENT), new TypeReference<Map<String, Object>>() {});
+                if (StringUtils.isNotEmpty((String) certInfo.get(JsonKeys.RELATED))) {
+                    Map<String, Object> related = requestMapper.readValue((String) certInfo.get(JsonKeys.RELATED), new TypeReference<Map<String, Object>>() {});
+                    certInfo.put(JsonKeys.RELATED, related);
+                }
+                certInfo.put(JsonKeys.DATA, data);
+                certInfo.put(JsonKeys.RECIPIENT, recipient);
+                response.put(JsonKeys.RESPONSE, certInfo);
+            } catch (Exception e) {
+                logger.error("CertsServiceImpl:read:exception occurred: {}", e.getMessage());
+                throw new BaseException(IResponseMessage.INTERNAL_ERROR, getLocalizedMessage(IResponseMessage.INTERNAL_ERROR, null), ResponseCode.SERVER_ERROR.getCode());
+            }
         } else {
             throw new BaseException(IResponseMessage.RESOURCE_NOT_FOUND, localizer.getMessage(IResponseMessage.RESOURCE_NOT_FOUND, null), ResponseCode.RESOURCE_NOT_FOUND.getCode());
         }

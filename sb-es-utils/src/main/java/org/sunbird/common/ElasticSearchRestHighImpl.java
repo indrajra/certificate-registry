@@ -4,7 +4,6 @@ import akka.dispatch.Futures;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
@@ -30,6 +29,8 @@ import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInter
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.common.inf.ElasticSearchService;
 import org.sunbird.dto.SearchDTO;
 import org.sunbird.helper.ConnectionManager;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 
 public class ElasticSearchRestHighImpl implements ElasticSearchService {
   private static final String ERROR = "ERROR";
-  static Logger logger=Logger.getLogger(ElasticSearchRestHighImpl.class);
+  static Logger logger= LoggerFactory.getLogger(ElasticSearchRestHighImpl.class);
 
 
   /**

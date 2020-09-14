@@ -2,10 +2,15 @@ package utils.module;
 
 
 import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
-import org.apache.log4j.Logger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.sunbird.JsonKeys;
 import play.http.ActionCreator;
 import play.mvc.Action;
 import play.mvc.Http;
@@ -18,12 +23,17 @@ import play.mvc.Result;
  *
  */
 public class OnRequestHandler implements ActionCreator {
-    Logger logger = Logger.getLogger(OnRequestHandler.class);
+    Logger logger = LoggerFactory.getLogger(OnRequestHandler.class);
     @Override
     public Action createAction(Http.Request request, Method method) {
         return new Action.Simple() {
             @Override
             public CompletionStage<Result> call(Context context) {
+                Optional<String> requestIdHeader = request.getHeaders().get(JsonKeys.X_REQUEST_ID);
+                String reqId = requestIdHeader.orElseGet(() -> UUID.randomUUID().toString());
+                MDC.clear();
+                MDC.put(JsonKeys.REQUEST_MESSAGE_ID, reqId);
+                request.getHeaders().addHeader(JsonKeys.REQUEST_MESSAGE_ID, reqId);
                 CompletionStage<Result> result = null;
                 logger.debug("On request method called");
                 result = delegate.call(context);

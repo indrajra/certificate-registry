@@ -72,5 +72,8 @@ public class JsonKeys {
     public static final String VERSION_1 = "v1";
     public static final String VERSION = "version";
     public static final String PRINT_URI = "printUri";
+    public static final String REQ_ID ="reqId";
+    public static final String REQUEST_MESSAGE_ID = "msgId";
+    public static final String X_REQUEST_ID = "X-Request-ID";
 
 }

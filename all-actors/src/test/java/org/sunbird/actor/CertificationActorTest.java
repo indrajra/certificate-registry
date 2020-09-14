@@ -205,19 +205,6 @@ public class CertificationActorTest {
     }
 
     @Test
-    public void testReadCertificateMetaData() throws Exception {
-        Request request = createCertReadRequest();
-        request.setOperation(ActorOperations.READ_CERT_META_DATA.getOperation());
-        beforeTestSetUp();
-        TestKit testKit = new TestKit(system);
-        ActorRef actorRef = system.actorOf(props);
-        actorRef.tell(request, testKit.getRef());
-        Response res = testKit.expectMsgClass(Duration.create(1000, TimeUnit.SECONDS),Response.class);
-        Assert.assertTrue(null != res && res.getResponseCode() == ResponseCode.OK);
-    }
-
-
-    @Test
     public void testDownloadV2Certificate() throws Exception {
         Request request = createDownloadV2CertRequest();
         request.setOperation(ActorOperations.DOWNLOADV2.getOperation());
@@ -248,6 +235,8 @@ public class CertificationActorTest {
         Map<String, Object> responseMap = new HashMap<>();
         responseMap.put(JsonKeys.DATA, "{\"id\":\"http://localhost:8080/_schemas/Certificate/d5a28280-98ac-4294-a508-21075dc7d475\",\"type\":[\"Assertion\",\"Extension\",\"extensions:CertificateExtension\"],\"issuedOn\":\"2019-08-31T12:52:25Z\",\"recipient\":{\"identity\":\"ntptest103\",\"type\":[\"phone\"],\"hashed\":false,\"name\":\"Aishwarya\",\"@context\":\"http://localhost:8080/_schemas/context.json\"},\"badge\":{\"id\":\"http://localhost:8080/_schemas/Badge.json\",\"type\":[\"BadgeClass\"],\"name\":\"Sunbird installation\",\"description\":\"Certificate of Appreciation in National Level ITI Grading\",\"image\":\"https://certs.example.gov/o/dgt/HJ5327VB1247G\",\"criteria\":{\"type\":[\"Criteria\"],\"id\":\"http://localhost:8080/_schemas/Certificate/d5a28280-98ac-4294-a508-21075dc7d475\",\"narrative\":\"For exhibiting outstanding performance\"},\"issuer\":{\"context\":\"http://localhost:8080/_schemas/context.json\",\"id\":\"http://localhost:8080/_schemas/Issuer.json\",\"type\":[\"Issuer\"],\"name\":\"NIIT\"},\"@context\":\"http://localhost:8080/_schemas/context.json\"},\"expires\":\"2019-09-30T12:52:25Z\",\"verification\":{\"type\":[\"SignedBadge\"],\"creator\":\"http://localhost:8080/_schemas/publicKey.json\"},\"revoked\":false,\"validFrom\":\"2019-06-21\",\"@context\":\"http://localhost:8080/_schemas/context.json\"}");
         responseMap.put(JsonKeys.RELATED, "{\"type\":\"course completion certificate prad\",\"batchId\":\"0130589602973368326\",\"courseId\":\"do_11305895730108006411643\"}");
+        responseMap.put(JsonKeys.RECIPIENT, "{\"name\":\"Test user\",\"email\":null,\"phone\":null,\"id\":null,\"type\":\"individual\"}");
+        responseMap.put(JsonKeys.ACCESS_CODE, "access_code");
         Response response = new Response();
         response.put(JsonKeys.RESPONSE, Lists.newArrayList(responseMap));
         return response;

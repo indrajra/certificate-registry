@@ -6,7 +6,6 @@ import com.typesafe.config.Config;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -20,6 +19,8 @@ import org.elasticsearch.search.aggregations.bucket.histogram.Histogram;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.dto.SearchDTO;
 import scala.concurrent.Await;
 
@@ -56,7 +57,7 @@ public class ElasticSearchHelper {
   public static final List<String> upsertResults =
       new ArrayList<>(Arrays.asList("CREATED", "UPDATED", "NOOP"));
   private static final String _DOC = "_doc";
-  static Logger logger=Logger.getLogger(ElasticSearchHelper.class);
+  static Logger logger= LoggerFactory.getLogger(ElasticSearchHelper.class);
 
 
   private ElasticSearchHelper() {}

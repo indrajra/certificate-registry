@@ -1,41 +1,55 @@
 package org.sunbird;
 
 import akka.actor.UntypedAbstractActor;
-import org.apache.log4j.Logger;
-import org.sunbird.common.factory.EsClientFactory;
-import org.sunbird.common.inf.ElasticSearchService;
+import akka.event.DiagnosticLoggingAdapter;
+import akka.event.Logging;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.Localizer;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
-import org.sunbird.service.ICertService;
-import org.sunbird.serviceimpl.CertsServiceImpl;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Amit Kumar
  */
 public abstract class BaseActor extends UntypedAbstractActor {
-    private Logger logger = Logger.getLogger(BaseActor.class);
+    public final DiagnosticLoggingAdapter logger = Logging.getLogger(this);
     public abstract void onReceive(Request request) throws Throwable;
     protected Localizer localizer = Localizer.getInstance();
 
     @Override
     public void onReceive(Object message) throws Throwable {
+
         if (message instanceof Request) {
             Request request = (Request) message;
+            Map<String, Object> trace = new HashMap<>();
+            if (request.getHeaders().containsKey(JsonKeys.REQUEST_MESSAGE_ID)) {
+                ArrayList<String> requestIds =
+                        (ArrayList<String>) request.getHeaders().get(JsonKeys.REQUEST_MESSAGE_ID);
+                trace.put(JsonKeys.REQUEST_MESSAGE_ID, requestIds.get(0));
+                logger.setMDC(trace);
+                // set mdc for non actors
+                new BaseLogger().setReqId(logger.getMDC());
+            }
             String operation = request.getOperation();
-            logger.info("BaseActor:onReceive called for operation:" + operation);
+            logger.info("onReceive called for operation: {}", operation);
             try {
-                logger.info("BaseActor:onReceive:method started at"+System.currentTimeMillis());
+                logger.info("onReceive:method {} started at {}", operation, System.currentTimeMillis());
                 onReceive(request);
-                logger.info("BaseActor:onReceive:method ended at"+System.currentTimeMillis());
+                logger.info("onReceive:method {} ended at {}", operation, System.currentTimeMillis());
             } catch (Exception e) {
+                logger.error("Exception : operation {} : message : {} {}", operation, e.getMessage(), e);
                 onReceiveException(operation, e);
+            } finally {
+                logger.clearMDC();
             }
         } else {
-            logger.info("BaseActor: onReceive called with invalid type of request.");
+            logger.info("onReceive called with invalid type of request.");
         }
     }
 

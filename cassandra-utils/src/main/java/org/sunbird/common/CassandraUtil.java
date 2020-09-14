@@ -7,7 +7,8 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select.Where;
 import com.datastax.driver.core.querybuilder.Update;
 import com.datastax.driver.core.querybuilder.Update.Assignments;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.cassandraannotation.ClusteringKey;
 import org.sunbird.cassandraannotation.PartitioningKey;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public final class CassandraUtil {
 
-  private static Logger logger = Logger.getLogger(CassandraUtil.class);
+  private static Logger logger = LoggerFactory.getLogger(CassandraUtil.class);
   private static final CassandraPropertyReader propertiesCache =
       CassandraPropertyReader.getInstance();
   private static final String SERIAL_VERSION_UID = "serialVersionUID";

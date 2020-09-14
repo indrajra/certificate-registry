@@ -1,8 +1,8 @@
 package org.sunbird.actor;
 
-import org.apache.log4j.Logger;
 import org.sunbird.BaseActor;
 import org.sunbird.BaseException;
+import org.sunbird.BaseLogger;
 import org.sunbird.JsonKeys;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.cassandra.CassandraOperation;
@@ -12,6 +12,7 @@ import org.sunbird.common.inf.ElasticSearchService;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.request.Request;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @ActorConfig(
@@ -20,7 +21,6 @@ import java.util.Map;
         asyncTasks = {}
 )
 public class CertBackgroundActor extends BaseActor {
-    static Logger logger = Logger.getLogger(CertBackgroundActor.class);
     private ElasticSearchService elasticSearchService = getESService();
     private CassandraOperation cassandraOperation = getCassandraOperation();
     private static CassandraOperation getCassandraOperation(){

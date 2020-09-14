@@ -142,15 +142,4 @@ public class CertificateController extends BaseController {
                 }, JsonKeys.SEARCH);
     }
 
-    public CompletionStage<Result> readCertMetaData(String certId) {
-        IRequestValidator requestValidator = new CertReadMetaDataValidator();
-        return handleRequest(request(),
-                request -> {
-                    Request req = (Request) request;
-                    req.getRequest().put(JsonKeys.ID, certId);
-                    requestValidator.validate(req);
-                    return null;
-                }, JsonKeys.READ_CERT_META_DATA);
-    }
-
 }

@@ -1,7 +1,8 @@
 package org.sunbird;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * this class will help in getting the env values for calling the cert service
@@ -10,7 +11,7 @@ import org.apache.log4j.Logger;
 public class CertVars {
 
     public static final String CERT_SERVICE_BASE_URL= "cert_service_base_url";
-    private static Logger logger=Logger.getLogger(CertVars.class);
+    private static Logger logger= LoggerFactory.getLogger(CertVars.class);
     private  static final String SERVICE_BASE_URL=getPropsFromEnvs(CERT_SERVICE_BASE_URL);
     private static final String DOWNLOAD_URI= "/v1/user/certs/download";
     private static final String GENERATE_URI="/v1/certs/generate";

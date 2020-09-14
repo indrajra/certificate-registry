@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * @author Amit Kumar
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class PropertiesCache {
 
-  Logger logger = Logger.getLogger(PropertiesCache.class);
+  Logger logger = LoggerFactory.getLogger(PropertiesCache.class);
   private final String[] fileName = {
     "cassandra.config.properties",
     "dbconfig.properties"

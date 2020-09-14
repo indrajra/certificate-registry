@@ -144,17 +144,6 @@ public class CertificateControllerTest extends BaseApplicationTest {
     }
 
     @Test
-    public void testReadCertificateMetaDataSuccess() {
-        Result result =
-                performTest(
-                        "/certs/v1/registry/read/metadata/123",
-                        "GET",
-                        null);
-        assertEquals(HttpStatus.SC_OK, getResponseStatus(result));
-    }
-
-
-    @Test
     public void testDownloadV2CertificateSuccess() {
         Result result =
                 performTest(

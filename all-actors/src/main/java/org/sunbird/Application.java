@@ -2,7 +2,8 @@ package org.sunbird;
 
 import akka.actor.ActorRef;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.actor.core.ActorCache;
 import org.sunbird.actor.core.ActorService;
 import org.sunbird.helper.CassandraConnectionManager;
@@ -23,7 +24,7 @@ public class Application {
     private final static String actorSystemName = "certActorSystem";
     private static Application instance = new Application();
     private static Localizer localizer = Localizer.getInstance();
-    private static Logger logger = Logger.getLogger(Application.class);
+    private static Logger logger = LoggerFactory.getLogger(Application.class);
 
 
     // private constructor restricted to this class itself
