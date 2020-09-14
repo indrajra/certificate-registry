@@ -49,10 +49,10 @@ public class CertificateUtil {
     public static boolean isIdPresent(String certificateId) {
         logger.info("CertificateUtil:isIdPresent:get id to search in ES:"+certificateId);
         Map<String,Object> response = (Map)ElasticSearchHelper.getResponseFromFuture(elasticSearchService.getDataByIdentifier(JsonKeys.CERT_ALIAS,certificateId));
-        logger.info("CertificateUtil:isIdPresent:got response from ES:"+response);
         if (MapUtils.isNotEmpty(response)) {
                 return true;
         }
+        logger.info("CertificateUtil:isIdPresent: id not found");
         return false;
     }
 
@@ -110,12 +110,12 @@ public class CertificateUtil {
     public static  Map<String,Object> getCertificate(String certificateId) {
         logger.info("CertificateUtil:isIdPresent:get id to search in ES:"+certificateId);
         Map<String,Object> response = (Map)ElasticSearchHelper.getResponseFromFuture(elasticSearchService.getDataByIdentifier(JsonKeys.CERT_ALIAS,certificateId));
-        logger.info("CertificateUtil:isIdPresent:got response from ES:"+response);
+        logger.info("CertificateUtil:isIdPresent:got response from ES.");
         return response;
     }
 
     public static Future<HttpResponse<JsonNode>> makeAsyncPostCall(String apiToCall, String requestBody, Map<String,String>headerMap){
-        logger.info("CertificateUtil:makePostCall:get request to make post call for API:"+apiToCall+":"+requestBody);
+        logger.info("CertificateUtil:makePostCall:get request to make post call for API:"+apiToCall);
         Future<HttpResponse<JsonNode>> jsonResponse
                     = Unirest.post(apiToCall)
                     .headers(headerMap)

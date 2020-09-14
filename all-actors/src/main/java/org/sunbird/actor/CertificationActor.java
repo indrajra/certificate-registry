@@ -35,6 +35,7 @@ public class CertificationActor extends BaseActor {
                 break;
             case "addV2" :
                 add(request);
+                break;
             case  "validate" :
                 validate(request);
                 break;

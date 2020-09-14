@@ -32,7 +32,6 @@ public class RequestMapper {
      * @return <T>
      */
     public static <T> Object mapRequest(play.mvc.Http.Request req, Class<T> obj) throws BaseException {
-        logger.info("RequestMapper:mapRequest:Requested data:" + req);
         if (req == null) throw new ActorServiceException.InvalidRequestData(
                 IResponseMessage.INVALID_REQUESTED_DATA,
                 Localizer.getInstance().getMessage(IResponseMessage.INVALID_REQUESTED_DATA, null),
@@ -45,8 +44,6 @@ public class RequestMapper {
             return Json.fromJson(requestData, obj);
         } catch (Exception e) {
             logger.error("RequestMapper:mapRequest: " + e.getMessage(), e);
-            logger.info("RequestMapper:mapRequest:Requested data " + requestData);
-
             throw new ActorServiceException.InvalidRequestData(
                     IResponseMessage.INVALID_REQUESTED_DATA,
                     Localizer.getInstance().getMessage(IResponseMessage.INVALID_REQUESTED_DATA, null),

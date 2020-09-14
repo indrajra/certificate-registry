@@ -43,11 +43,9 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
 
     @Override
     public CompletionStage<Result> onServerError(Http.RequestHeader request, Throwable t) {
-        logger.info(
-                "Global: onError called for path = "
-                        + request.path()
-                        + ", headers = "
-                        + request.getHeaders().toMap());
+        logger.error(
+          "Error : with message {} ",
+            t.getMessage(),t);
         Response response = new Response();
         response.setResponseCode(ResponseCode.SERVER_ERROR);
         response.put("message", "server error");

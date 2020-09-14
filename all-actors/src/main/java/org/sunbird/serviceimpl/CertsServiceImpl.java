@@ -133,7 +133,7 @@ public class CertsServiceImpl implements ICertService {
                 .setRelated((Map)certReqAddMap.get(JsonKeys.RELATED))
                 .setReason((String)certReqAddMap.get(JsonKeys.REASON))
                 .build();
-        logger.info("CertsServiceImpl:getCertificate:certificate object formed: "+certificate);
+        logger.info("CertsServiceImpl:getCertificate:certificate object formed.");
         return certificate;
     }
     private Recipient getCompositeReciepientObject(Map<String, Object> certAddRequestMap) {
@@ -192,7 +192,7 @@ public class CertsServiceImpl implements ICertService {
             requestMap.put(JsonKeys.PDF_URL,(String)request.getRequest().get(JsonKeys.PDF_URL));
             certReqMap.put(JsonKeys.REQUEST,requestMap);
             String requestBody = requestMapper.writeValueAsString(certReqMap);
-            logger.info("CertsServiceImpl:download:request body found:" + requestBody);
+            logger.info("CertsServiceImpl:download:request body found.");
             String apiToCall = CertVars.getSERVICE_BASE_URL().concat(CertVars.getDOWNLOAD_URI());
             logger.info("CertsServiceImpl:download:complete url found:" + apiToCall);
             Future<HttpResponse<JsonNode>>responseFuture=CertificateUtil.makeAsyncPostCall(apiToCall,requestBody,headerMap);
@@ -240,7 +240,7 @@ public class CertsServiceImpl implements ICertService {
             Map<String, Object> certReqMap = new HashMap<>();
             certReqMap.put(JsonKeys.REQUEST,request.getRequest());
             String requestBody = requestMapper.writeValueAsString(certReqMap);
-            logger.info("CertsServiceImpl:generate:request body found:" + requestBody);
+            logger.info("CertsServiceImpl:generate:request body found.");
             String apiToCall = CertVars.getSERVICE_BASE_URL().concat(CertVars.getGenerateUri());
             logger.info("CertsServiceImpl:generate:complete url found:" + apiToCall);
             Future<HttpResponse<JsonNode>>responseFuture=CertificateUtil.makeAsyncPostCall(apiToCall,requestBody,headerMap);
@@ -267,7 +267,7 @@ public class CertsServiceImpl implements ICertService {
             Map<String, Object> certVerifyReqMap = new HashMap<>();
             certVerifyReqMap.put(JsonKeys.REQUEST,composeCertVerifyRequest(request));
             String requestBody = requestMapper.writeValueAsString(certVerifyReqMap);
-            logger.info("CertsServiceImpl:verify:request body prepared:" + requestBody);
+            logger.info("CertsServiceImpl:verify:request body prepared.");
             String apiToCall = CertVars.getSERVICE_BASE_URL().concat(CertVars.getVerifyUri());
             logger.info("CertsServiceImpl:verify:complete url prepared:" + apiToCall);
             Future<HttpResponse<JsonNode>>responseFuture=CertificateUtil.makeAsyncPostCall(apiToCall,requestBody,headerMap);
@@ -344,7 +344,7 @@ public class CertsServiceImpl implements ICertService {
         Response response = new Response();
         try {
             String requestBody = requestMapper.writeValueAsString(request.getRequest());
-            logger.info("CertsServiceImpl:search:request body found:" + requestBody);
+            logger.info("CertsServiceImpl:search:request body found.");
             String apiToCall = CertVars.getEsSearchUri();
             logger.info("CertsServiceImpl:search:complete url found:" + apiToCall);
             Future<HttpResponse<JsonNode>> responseFuture = CertificateUtil.makeAsyncPostCall(apiToCall, requestBody, headerMap);

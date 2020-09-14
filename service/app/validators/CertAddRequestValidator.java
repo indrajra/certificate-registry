@@ -33,7 +33,6 @@ public class CertAddRequestValidator implements IRequestValidator {
     @Override
     public void validate(Request request) throws BaseException {
         this.request=request;
-        logger.info("CertAddRequestValidator:validate:started validating the request with request id "+request.getRequest());
         if (((String) request.getContext().get(JsonKeys.VERSION)).equalsIgnoreCase(JsonKeys.VERSION_2)) {
             mandatoryParamsList = Lists.newArrayList(JsonKeys.ID, JsonKeys.ACCESS_CODE);
         } else {
