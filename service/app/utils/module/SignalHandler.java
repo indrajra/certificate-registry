@@ -2,7 +2,12 @@ package utils.module;
 
 import akka.actor.ActorSystem;
 import org.apache.commons.lang3.StringUtils;
+<<<<<<< HEAD
 import org.apache.log4j.Logger;
+=======
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+>>>>>>> upstream/release-1.4.0
 import play.api.Application;
 import play.api.Play;
 import scala.concurrent.duration.Duration;
@@ -17,7 +22,11 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class SignalHandler {
 
+<<<<<<< HEAD
   Logger logger = Logger.getLogger(SignalHandler.class);
+=======
+  Logger logger = LoggerFactory.getLogger(SignalHandler.class);
+>>>>>>> upstream/release-1.4.0
   private String stopDelay = System.getenv("sigterm_stop_delay");
   private static FiniteDuration STOP_DELAY = null;
 

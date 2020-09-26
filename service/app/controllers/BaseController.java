@@ -8,7 +8,8 @@ import akka.actor.ActorRef;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.Application;
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
@@ -38,7 +39,11 @@ import utils.module.SignalHandler;
  * @author Anmol
  */
 public class BaseController extends Controller {
+<<<<<<< HEAD
     Logger logger = Logger.getLogger(BaseController.class);
+=======
+    Logger logger = LoggerFactory.getLogger(BaseController.class);
+>>>>>>> upstream/release-1.4.0
 
     @Inject
     SignalHandler signalHandler;

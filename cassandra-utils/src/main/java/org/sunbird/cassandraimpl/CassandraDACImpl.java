@@ -10,7 +10,8 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.common.CassandraUtil;
 import org.sunbird.common.Constants;
@@ -24,7 +25,7 @@ import java.util.concurrent.Executors;
 
 public class CassandraDACImpl extends CassandraOperationImpl {
 
-  Logger logger = Logger.getLogger(CassandraDACImpl.class);
+  Logger logger = LoggerFactory.getLogger(CassandraDACImpl.class);
   public Response getRecords(
       String keySpace, String table, Map<String, Object> filters, List<String> fields) throws BaseException {
     Response response = new Response();

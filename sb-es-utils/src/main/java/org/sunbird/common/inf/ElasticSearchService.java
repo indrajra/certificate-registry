@@ -1,6 +1,7 @@
 package org.sunbird.common.inf;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.dto.SearchDTO;
 import scala.concurrent.Future;
 
@@ -9,7 +10,7 @@ import java.util.Map;
 
 public interface ElasticSearchService {
   public static final String _DOC = "_doc";
-  static Logger logger=Logger.getLogger(ElasticSearchService.class);
+  Logger logger= LoggerFactory.getLogger(ElasticSearchService.class);
 
 
   /**

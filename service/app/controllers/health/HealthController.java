@@ -4,7 +4,10 @@ import controllers.BaseController;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+<<<<<<< HEAD
 import org.apache.log4j.Logger;
+=======
+>>>>>>> upstream/release-1.4.0
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;

@@ -1,7 +1,6 @@
 package utils;
 
 
-import org.apache.log4j.BasicConfigurator;
 import org.sunbird.Application;
 import org.sunbird.BaseException;
 import play.api.Environment;
@@ -27,7 +26,6 @@ public class ApplicationStart {
 	  @Inject
 	  public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) throws BaseException {
 	  	//instantiate actor system and initialize all the actors
-		  BasicConfigurator.configure();
 
 		  Application.getInstance().init();
 	    // Shut-down hook

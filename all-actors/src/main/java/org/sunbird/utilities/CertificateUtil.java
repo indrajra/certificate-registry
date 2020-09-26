@@ -6,7 +6,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.sunbird.ActorOperations;
 import org.sunbird.Application;
 import org.sunbird.BaseException;
@@ -20,6 +22,7 @@ import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.Localizer;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
+import org.sunbird.request.RequestParams;
 import org.sunbird.response.Response;
 
 import java.sql.Timestamp;
@@ -34,7 +37,7 @@ import java.util.concurrent.Future;
 public class CertificateUtil {
     private static final ElasticSearchService elasticSearchService= EsClientFactory.getInstance();
     private static final CassandraOperation cassandraOperation = ServiceFactory.getInstance();
-    private static Logger logger=Logger.getLogger(CertificateUtil.class);
+    private static Logger logger= LoggerFactory.getLogger(CertificateUtil.class);
     private static ObjectMapper mapper = new ObjectMapper();
     private static Localizer localizer = Localizer.getInstance();
 
@@ -46,10 +49,10 @@ public class CertificateUtil {
     public static boolean isIdPresent(String certificateId) {
         logger.info("CertificateUtil:isIdPresent:get id to search in ES:"+certificateId);
         Map<String,Object> response = (Map)ElasticSearchHelper.getResponseFromFuture(elasticSearchService.getDataByIdentifier(JsonKeys.CERT_ALIAS,certificateId));
-        logger.info("CertificateUtil:isIdPresent:got response from ES:"+response);
         if (MapUtils.isNotEmpty(response)) {
                 return true;
         }
+        logger.info("CertificateUtil:isIdPresent: id not found");
         return false;
     }
 
@@ -64,6 +67,9 @@ public class CertificateUtil {
         Request req = new Request();
         req.setOperation(ActorOperations.DELETE_CERT_CASSANDRA.getOperation());
         req.getRequest().put(JsonKeys.ID,id);
+        RequestParams params = new RequestParams();
+        params.setMsgid(MDC.get(JsonKeys.REQUEST_MESSAGE_ID));
+        req.setParams(params);
         Application.getInstance().getActorRef(ActorOperations.DELETE_CERT_CASSANDRA.getOperation()).tell(req, ActorRef.noSender());
         return bool;
     }
@@ -88,7 +94,13 @@ public class CertificateUtil {
         logger.info("CertificateUtil:insertRecord: record successfully inserted with id"+certAddReqMap.get(JsonKeys.ID));
         //index data to ES
         Request req = new Request();
+        RequestParams params = new RequestParams();
+        params.setMsgid(MDC.get(JsonKeys.REQUEST_MESSAGE_ID));
+        req.setParams(params);
         req.setOperation(ActorOperations.ADD_CERT_ES.getOperation());
+        //We started with elastic search, The data object was the sole thing to start with. Then we added a Cassandra table.
+        //as certificate json size is now about 650 KB, so we should stop pushing the json data [object]
+        certAddReqMap.remove(JsonKeys.DATA);
         req.getRequest().put(JsonKeys.REQUEST,certAddReqMap);
         Application.getInstance().getActorRef(ActorOperations.ADD_CERT_ES.getOperation()).tell(req, ActorRef.noSender());
         return response;
@@ -98,12 +110,12 @@ public class CertificateUtil {
     public static  Map<String,Object> getCertificate(String certificateId) {
         logger.info("CertificateUtil:isIdPresent:get id to search in ES:"+certificateId);
         Map<String,Object> response = (Map)ElasticSearchHelper.getResponseFromFuture(elasticSearchService.getDataByIdentifier(JsonKeys.CERT_ALIAS,certificateId));
-        logger.info("CertificateUtil:isIdPresent:got response from ES:"+response);
+        logger.info("CertificateUtil:isIdPresent:got response from ES.");
         return response;
     }
 
     public static Future<HttpResponse<JsonNode>> makeAsyncPostCall(String apiToCall, String requestBody, Map<String,String>headerMap){
-        logger.info("CertificateUtil:makePostCall:get request to make post call for API:"+apiToCall+":"+requestBody);
+        logger.info("CertificateUtil:makePostCall:get request to make post call for API:"+apiToCall);
         Future<HttpResponse<JsonNode>> jsonResponse
                     = Unirest.post(apiToCall)
                     .headers(headerMap)

@@ -3,7 +3,8 @@ package validators;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.JsonKeys;
 import org.sunbird.message.IResponseMessage;
@@ -21,10 +22,10 @@ import java.util.Map;
  * @author anmolgupta
  */
 public class CertAddRequestValidator implements IRequestValidator {
-    static Logger logger=Logger.getLogger(CertAddRequestValidator.class);
+    static Logger logger= LoggerFactory.getLogger(CertAddRequestValidator.class);
     private Request request;
     private Localizer localizer = Localizer.getInstance();
-    static List<String> mandatoryParamsList = Lists.newArrayList(JsonKeys.ID, JsonKeys.ACCESS_CODE, JsonKeys.PDF_URL);
+    static List<String> mandatoryParamsList;
     static List<String> allowedRecipientsType=Lists.newArrayList(JsonKeys.INDIVIDUAL,JsonKeys.ENTITY);
     public CertAddRequestValidator() {
     }
@@ -32,7 +33,11 @@ public class CertAddRequestValidator implements IRequestValidator {
     @Override
     public void validate(Request request) throws BaseException {
         this.request=request;
-        logger.info("CertAddRequestValidator:validate:started validating the request with request id "+request.getRequest());
+        if (((String) request.getContext().get(JsonKeys.VERSION)).equalsIgnoreCase(JsonKeys.VERSION_2)) {
+            mandatoryParamsList = Lists.newArrayList(JsonKeys.ID, JsonKeys.ACCESS_CODE);
+        } else {
+            mandatoryParamsList = Lists.newArrayList(JsonKeys.ID, JsonKeys.ACCESS_CODE, JsonKeys.PDF_URL);
+        }
         validateMandatoryParams();
         validateMandatoryJsonData();
         if(request.getRequest().containsKey(JsonKeys.RECIPIENT_TYPE)) {

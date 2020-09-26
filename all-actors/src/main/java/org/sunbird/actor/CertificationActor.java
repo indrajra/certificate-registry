@@ -1,8 +1,8 @@
 package org.sunbird.actor;
 
-import org.apache.log4j.Logger;
 import org.sunbird.BaseActor;
 import org.sunbird.BaseException;
+import org.sunbird.BaseLogger;
 import org.sunbird.JsonKeys;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.request.Request;
@@ -10,13 +10,15 @@ import org.sunbird.response.Response;
 import org.sunbird.service.ICertService;
 import org.sunbird.serviceimpl.CertsServiceImpl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ActorConfig(
-        tasks = {"add","validate","download","generate","verify","search","read"},
+        tasks = {"add","validate","download","generate","verify","search","read", "addV2", "downloadV2"},
         dispatcher = "",
         asyncTasks = {}
 )
 public class CertificationActor extends BaseActor {
-    static Logger logger = Logger.getLogger(CertificationActor.class);
     private ICertService certService = getCertServiceImpl();
 
     private ICertService getCertServiceImpl(){
@@ -29,6 +31,9 @@ public class CertificationActor extends BaseActor {
         String operation = request.getOperation();
         switch (operation) {
             case "add" :
+                add(request);
+                break;
+            case "addV2" :
                 add(request);
                 break;
             case  "validate" :
@@ -48,6 +53,9 @@ public class CertificationActor extends BaseActor {
                 break;
             case "search":
                 search(request);
+                break;
+            case "downloadV2" :
+                downloadV2(request);
                 break;
             default:
                 onReceiveUnsupportedMessage("CertificationActor");
@@ -84,5 +92,9 @@ public class CertificationActor extends BaseActor {
     }
     private void search(Request request) throws BaseException{
         sender().tell(certService.search(request),self());
+    }
+
+    private void downloadV2(Request request) throws BaseException {
+        sender().tell(certService.downloadV2(request), self());
     }
 }

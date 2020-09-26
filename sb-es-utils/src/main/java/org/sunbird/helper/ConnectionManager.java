@@ -3,10 +3,11 @@ package org.sunbird.helper;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
-import org.apache.log4j.Logger;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.transport.TransportClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.common.EsJsonKey;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ConnectionManager {
   private static RestHighLevelClient restClient = null;
   private static List<String> host = new ArrayList<>();
   private static List<Integer> ports = new ArrayList<>();
-  private static Logger logger=Logger.getLogger(ConnectionManager.class);
+  private static Logger logger= LoggerFactory.getLogger(ConnectionManager.class);
 
   static {
     System.setProperty("es.set.netty.runtime.available.processors", "false");

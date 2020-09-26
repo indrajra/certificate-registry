@@ -3,7 +3,8 @@ package org.sunbird.common;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This util class for providing type safe config to any service that requires it.
@@ -15,7 +16,7 @@ public class ConfigUtil {
   private static Config config;
   private static final String DEFAULT_TYPE_SAFE_CONFIG_FILE_NAME = "service.conf";
   private static final String INVALID_FILE_NAME = "Please provide a valid file name.";
-  static Logger logger=Logger.getLogger(ConfigUtil.class);
+  static Logger logger= LoggerFactory.getLogger(ConfigUtil.class);
 
 
   /** Private default constructor. */

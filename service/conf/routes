@@ -9,8 +9,10 @@ GET  /:service/health                           @controllers.health.HealthContro
 
 # CERT  APIs
 POST  /certs/v1/registry/add                          @controllers.CertificateController.add()
+POST  /certs/v2/registry/add                          @controllers.CertificateController.addV2()
 POST /certs/v1/registry/validate                      @controllers.CertificateController.validate()
 POST  /certs/v1/registry/download                     @controllers.CertificateController.download()
+GET  /certs/v2/registry/download/:id                     @controllers.CertificateController.downloadV2(id:String)
 POST  /certs/v1/registry/verify                       @controllers.CertificateController.verify()
 GET  /certs/v1/registry/read/:id                      @controllers.CertificateController.read(id:String)
 POST  /certs/v1/registry/search                       @controllers.CertificateController.search()

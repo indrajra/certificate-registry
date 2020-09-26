@@ -7,7 +7,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.response.Response;
 
@@ -29,7 +30,7 @@ import play.mvc.Results;
 
 @Singleton
 public class ErrorHandler extends DefaultHttpErrorHandler {
-    Logger logger = Logger.getLogger(ErrorHandler.class);
+    Logger logger = LoggerFactory.getLogger(ErrorHandler.class);
 
     @Inject
     public ErrorHandler(
@@ -42,11 +43,9 @@ public class ErrorHandler extends DefaultHttpErrorHandler {
 
     @Override
     public CompletionStage<Result> onServerError(Http.RequestHeader request, Throwable t) {
-        logger.info(
-                "Global: onError called for path = "
-                        + request.path()
-                        + ", headers = "
-                        + request.getHeaders().toMap());
+        logger.error(
+          "Error : with message {} ",
+            t.getMessage(),t);
         Response response = new Response();
         response.setResponseCode(ResponseCode.SERVER_ERROR);
         response.put("message", "server error");

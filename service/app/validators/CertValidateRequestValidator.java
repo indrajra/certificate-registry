@@ -3,7 +3,8 @@ package validators;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.JsonKeys;
 import org.sunbird.message.IResponseMessage;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class CertValidateRequestValidator implements IRequestValidator {
 
     private static Localizer localizer = Localizer.getInstance();
-    static Logger logger=Logger.getLogger(CertValidateRequestValidator.class);
+    static Logger logger= LoggerFactory.getLogger(CertValidateRequestValidator.class);
     private Request request;
     static List<String> mandatoryParamsList = Lists.newArrayList(JsonKeys.CERT_ID, JsonKeys.ACCESS_CODE);
     @Override

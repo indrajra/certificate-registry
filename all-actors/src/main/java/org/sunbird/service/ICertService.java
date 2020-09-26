@@ -20,6 +20,8 @@ public interface ICertService{
 
     Response download(Request request) throws BaseException;
 
+    Response downloadV2(Request request) throws BaseException;
+
     Response generate(Request request) throws BaseException;
 
     Response verify(Request request) throws  BaseException;

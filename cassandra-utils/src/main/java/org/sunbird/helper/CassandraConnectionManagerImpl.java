@@ -19,7 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.common.Constants;
 import org.sunbird.message.IResponseMessage;
@@ -31,7 +32,7 @@ import org.sunbird.message.ResponseCode;
  */
 public class CassandraConnectionManagerImpl implements CassandraConnectionManager {
 
-  private static Logger logger = Logger.getLogger(CassandraConnectionManagerImpl.class);
+  private static Logger logger = LoggerFactory.getLogger(CassandraConnectionManagerImpl.class);
   private String mode;
   private static Map<String, Session> cassandraSessionMap = new HashMap<>();
   private static Map<String, Cluster> cassandraclusterMap = new HashMap<>();

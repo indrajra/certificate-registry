@@ -32,7 +32,8 @@ import java.util.Map.Entry;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sunbird.BaseException;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.CassandraUtil;
@@ -52,7 +53,7 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
   protected CassandraConnectionManager connectionManager;
   protected Localizer localizer = Localizer.getInstance();
 
-  Logger logger = Logger.getLogger(CassandraOperationImpl.class);
+  Logger logger = LoggerFactory.getLogger(CassandraOperationImpl.class);
 
   public CassandraOperationImpl() {
     connectionManager = CassandraConnectionMngrFactory.getObject("standalone");

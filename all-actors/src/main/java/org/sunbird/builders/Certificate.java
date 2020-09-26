@@ -47,13 +47,21 @@ public class Certificate {
     public Recipient getRecipient() {
         return recipient;
     }
-    public String getReason() { return reason;}
+
+    public String getReason() {
+        return reason;
+    }
+
     public String getId() {
         return id;
     }
 
     public String getPdfUrl() {
         return pdfUrl;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 
     public String getJsonUrl() {

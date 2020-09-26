@@ -1,7 +1,9 @@
 package org.sunbird.helper;
 
-import org.apache.log4j.Logger;
-import org.sunbird.common.CassandraUtil;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +16,7 @@ import java.util.Properties;
  */
 public class CassandraPropertyReader {
 
-  private static Logger logger = Logger.getLogger(CassandraPropertyReader.class);
+  private static Logger logger = LoggerFactory.getLogger(CassandraPropertyReader.class);
   private final Properties properties = new Properties();
   private static final String file = "cassandratablecolumn.properties";
   private static CassandraPropertyReader cassandraPropertyReader = null;

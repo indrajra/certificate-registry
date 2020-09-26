@@ -4,8 +4,10 @@ public class JsonKeys {
 
 
     public static final String CERT_ADD = "add";
+    public static final String CERT_ADD_V2 = "addV2";
     public static final String CERT_VALIDATE = "validate";
     public static final String CERT_DOWNLOAD = "download";
+    public static final String CERT_DOWNLOAD_V2 = "downloadV2";
     public static final String PDF_URL = "pdfUrl";
     public static final String JSON_DATA = "jsonData";
     public static final String ACCESS_CODE = "accessCode";
@@ -58,4 +60,23 @@ public class JsonKeys {
     public static final String SEARCH = "search";
     public static final String HITS ="hits";
     public static final String CERT_ALIAS ="certs";
+<<<<<<< HEAD
+=======
+    public static final String READ_CERT_META_DATA = "readCertMetaData";
+    public static final String BADGE = "badge";
+    public static final String DESCRIPTION = "description";
+    public static final String SIGNATORY = "signatory";
+    public static final String ISSUED_ON = "issuedOn";
+    public static final String QR_CODE_URL = "qrCodeUrl";
+    public static final String IDENTITY = "identity";
+    public static final String IMAGE = "image";
+    public static final String VERSION_2 = "v2";
+    public static final String VERSION_1 = "v1";
+    public static final String VERSION = "version";
+    public static final String PRINT_URI = "printUri";
+    public static final String REQ_ID ="reqId";
+    public static final String REQUEST_MESSAGE_ID = "msgId";
+    public static final String X_REQUEST_ID = "X-Request-ID";
+
+>>>>>>> upstream/release-1.4.0
 }

@@ -1,13 +1,14 @@
 package org.sunbird.common.factory;
 
-import org.apache.log4j.Logger;
 import org.sunbird.common.ElasticSearchRestHighImpl;
 import org.sunbird.common.inf.ElasticSearchService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EsClientFactory {
 
   private static ElasticSearchService restClient = null;
-  private static Logger logger=Logger.getLogger(EsClientFactory.class);
+  private static Logger logger=LoggerFactory.getLogger(EsClientFactory.class);
 
   /**
    * This method return REST client for elastic search
